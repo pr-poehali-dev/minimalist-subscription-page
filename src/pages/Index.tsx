@@ -8,33 +8,74 @@ import { Label } from '@/components/ui/label';
 import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
 
+const SUBSCRIBERS_URL = 'https://functions.poehali.dev/b02c986c-dea4-4742-9868-6b4b04a7eb62';
+const CONTACTS_URL = 'https://functions.poehali.dev/7751e128-f451-447a-8a00-29c5a0a94b98';
+
 export default function Index() {
   const [email, setEmail] = useState('');
   const [pushEnabled, setPushEnabled] = useState(false);
   const [contactName, setContactName] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [contactMessage, setContactMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       toast.error('Введите email');
       return;
     }
-    toast.success('Подписка оформлена!');
-    setEmail('');
+    
+    setLoading(true);
+    try {
+      const response = await fetch(SUBSCRIBERS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, pushEnabled })
+      });
+      
+      if (response.ok) {
+        toast.success('Подписка оформлена!');
+        setEmail('');
+        setPushEnabled(false);
+      } else {
+        toast.error('Ошибка подписки');
+      }
+    } catch (error) {
+      toast.error('Ошибка подключения');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleContact = (e: React.FormEvent) => {
+  const handleContact = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactName || !contactEmail || !contactMessage) {
       toast.error('Заполните все поля');
       return;
     }
-    toast.success('Сообщение отправлено!');
-    setContactName('');
-    setContactEmail('');
-    setContactMessage('');
+    
+    setLoading(true);
+    try {
+      const response = await fetch(CONTACTS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: contactName, email: contactEmail, message: contactMessage })
+      });
+      
+      if (response.ok) {
+        toast.success('Сообщение отправлено!');
+        setContactName('');
+        setContactEmail('');
+        setContactMessage('');
+      } else {
+        toast.error('Ошибка отправки');
+      }
+    } catch (error) {
+      toast.error('Ошибка подключения');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -81,8 +122,8 @@ export default function Index() {
                 <Switch checked={pushEnabled} onCheckedChange={setPushEnabled} />
               </div>
 
-              <Button type="submit" size="lg" className="w-full h-12 text-base">
-                Подписаться
+              <Button type="submit" size="lg" className="w-full h-12 text-base" disabled={loading}>
+                {loading ? 'Отправка...' : 'Подписаться'}
               </Button>
             </form>
           </Card>
@@ -180,8 +221,8 @@ export default function Index() {
                 />
               </div>
 
-              <Button type="submit" size="lg" className="w-full h-12">
-                Отправить
+              <Button type="submit" size="lg" className="w-full h-12" disabled={loading}>
+                {loading ? 'Отправка...' : 'Отправить'}
               </Button>
             </form>
           </Card>

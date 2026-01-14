@@ -1,0 +1,29 @@
+{
+  "tests": [
+    {
+      "name": "Get all subscribers",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "subscribers": "array"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create new subscriber",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "email": "test@example.com",
+        "pushEnabled": true
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "id": "number",
+        "message": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

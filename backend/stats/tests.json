@@ -1,0 +1,18 @@
+{
+  "tests": [
+    {
+      "name": "Get statistics",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "totalSubscribers": "number",
+        "pushEnabledCount": "number",
+        "totalMessages": "number",
+        "unreadMessages": "number",
+        "growthData": "array"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
